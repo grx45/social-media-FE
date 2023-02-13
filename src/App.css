@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+
+textarea::placeholder{
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+ 
+}
+.tweetpost {
+  
+  resize: none;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  border-radius: 0.75rem;
+  padding-left: 10px;
+  border: none;
+  width: 90%;
+}
+.avatar-container{
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  width: 10%;
+  height: 2.5rem;
+}
