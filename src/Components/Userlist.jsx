@@ -1,22 +1,57 @@
+import { Flex, Image, Text, Icon } from "@chakra-ui/react";
 import React from "react";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 function Userlist(props) {
   return (
-    <div className="w-4/5 my-2 p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 font-normal text-2xl flex items-center justify-between">
-      <div className="flex">
-        <div className="relative inline-flex justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full mr-4">
-          <span className="font-medium text-gray-600 flex ">
-            {props.avatar}
-          </span>
-        </div>
-        <Link to={`other/${props.id}`}>
-          <h5 className=" tracking-tight text-green-500">{props.username}</h5>
-        </Link>
-      </div>
-      <BsFillPersonPlusFill className="text-green-500" />
-    </div>
+    <Flex
+      w="80%"
+      my="2"
+      p="4"
+      _hover={{ bgColor: "gray.200" }}
+      border="1px"
+      borderColor="gray.200"
+      rounded="lg"
+      shadow="base"
+      alignItems="center"
+      justifyContent="space-between"
+      fontSize="xl"
+    >
+      <Flex>
+        <Image
+          src={props?.imgProfile}
+          alt="profile"
+          w="14"
+          h="14"
+          rounded="full"
+          mr="4"
+          objectFit="cover"
+        ></Image>
+
+        <Flex flexDirection="col" maxW={"50px"} flexWrap="wrap">
+          <Link to={`/${props.username}`}>
+            <Text
+              as="h5"
+              letterSpacing={"tight"}
+              color="green.500"
+              fontWeight="semibold"
+            >
+              {props.username}
+            </Text>
+          </Link>
+          <Text fontSize="sm" color="gray.500" as="p">
+            {props.email}
+          </Text>
+        </Flex>
+      </Flex>
+      <Icon
+        as={BsFillPersonPlusFill}
+        color="green.500"
+        boxSize={{ lg: "8", xl: "10" }}
+        mt="1"
+      />
+    </Flex>
   );
 }
 

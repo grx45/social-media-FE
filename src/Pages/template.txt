@@ -1,0 +1,16 @@
+<Box position="relative" maxW="7xl" mt="20">
+      <Box w={{ base: "95vw", md: "75vw" }} mx="auto">
+        <Card maxHeight="5xl" w="full">
+          <Box h="150px" border="1px" borderColor={"red.500"}>
+            <Image
+              w="full"
+              h="100%"
+              alt="banner"
+              objectFit={"cover"}
+              src="https://thumbs.dreamstime.com/b/no-image-available-icon-vector-illustration-flat-design-140633878.jpg"
+            />
+          </Box>
+          <Box>{data?.username}</Box>
+        </Card>
+      </Box>
+    </Box>

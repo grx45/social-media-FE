@@ -19,10 +19,11 @@ function Landing(props) {
   // step 5. bikin variable baru untuk nyimpen data dri json server
   const [tweetlist, setTweetList] = React.useState([]);
   const [limitval, setlimitVal] = React.useState(3);
+  // const [likes, setLikes] = React.useState([]);
 
   // step 2. ngambil username dan id dri redux
-  const username = useSelector((state) => state.SocioReducer.username); // untuk ngambil username dri redux
-  const id = useSelector((state) => state.SocioReducer.id); // untuk ngambil username dri id
+  // untuk ngambil data dri redux
+  const { username, imgProfile } = useSelector((state) => state.SocioReducer);
 
   // step 3. bikin function utk get post yd di dalam textarea ke json server
   const btnTweet = async () => {
@@ -30,12 +31,16 @@ function Landing(props) {
       if (textarea === "") {
         alert("please fill in posting field");
       } else {
-        await axios.post(`${API_URL}feed`, {
-          iduser: id,
-          username: username,
-          like: 0,
-          posting: textarea,
-        });
+        let token = localStorage.getItem("socio_login");
+        await axios.post(
+          `${API_URL}user/tweet`,
+          { posting: textarea },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setTextArea(""); // untuk reset textarea jdi kosong stelah click tweet button
         getAllTweet();
       }
@@ -47,105 +52,130 @@ function Landing(props) {
   // step 4. bkin function utk mengambil data dri json server buat kasih liat posting di feed
   const getAllTweet = async () => {
     try {
-      let response = await axios.get(`${API_URL}feed?_sort=id&_order=desc`);
-      setTweetList(response.data);
+      let response = await axios.get(`${API_URL}user/posts`);
+      // console.log("response.data tweet = ", response.data.count);
+      setTweetList(response.data.count);
     } catch (error) {
-      console.log("error", error);
+      console.log("error = ", error);
+      // console.log(error.response.data.message);
     }
   };
 
   const getAllUser = async () => {
     try {
-      //below buat ambil data dri json server
-      let response = await axios.get(
-        `${API_URL}user?&id_ne=${localStorage.getItem(
-          "socio_login"
-        )}&_limit=${limitval}`
-      );
-      // console.log("current limit val = ", limitval);
-      // console.log("response.data = ", response.data);
-      setUserList(response.data);
+      // 1. ambil data dari token dlu
+      let token = localStorage.getItem("socio_login");
+      if (token) {
+        //below buat ambil data dri json server
+        let response = await axios.post(
+          `${API_URL}user/?limit=${limitval}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setUserList(response.data.data);
+        // console.log("current limit val = ", limitval);
+        // console.log("response.data = ", response.data.data);
+      }
     } catch (error) {
-      console.log("error");
+      console.log("error = ", error);
     }
   };
 
-  console.log("limit before click:", limitval);
+  const printUser = () => {
+    let newArr = userList.map((val) => {
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaa", val);
+      return (
+        <Userlist
+          imgProfile={val.imgProfile}
+          id={val.id}
+          username={val.username}
+          email={val.email}
+        />
+      );
+    });
+    return newArr;
+  };
+
+  // console.log("limit before click:", limitval);
   const showMore = () => {
     if (limitval === 6) {
       setlimitVal(3);
     } else {
       setlimitVal(6);
     }
-    console.log("limit after click:", limitval);
+    // console.log("limit after click:", limitval);
   };
 
   // step 6. msukin getalltweet ke useeffect biar saat render smua function dlam useeffect langsung jalan
   React.useEffect(() => {
     getAllUser();
     getAllTweet();
-  }, [limitval]);
+  }, [limitval, username]);
 
   // step 7. bikin fucntion untuk print feed
   const printTweet = () => {
-    let newArr = tweetlist.map((val, idx) => {
+    let likedByLoggedInUser = [];
+    let newArr = tweetlist.map((val) => {
+      console.log("hasil dri val utk cari like = ", val);
+      if (val.likes.length > 0) {
+        likedByLoggedInUser = val.likes.filter(
+          (likes) => likes.user.username === username && likes.isliked === true
+        );
+      }
+
       return (
         <Feed
-          username={val.username}
+          countlike={val.countLike}
+          username={username}
+          likedByLoggedInUser={likedByLoggedInUser}
+          postUsername={val.user.username}
+          imgProfile={val.user.imgProfile}
           posting={val.posting}
-          like={val.like}
           id={val.id}
+          date={val.createdAt}
+          getAllTweet={getAllTweet}
         />
       );
     });
-    return newArr;
-  };
 
-  const printUser = () => {
-    let newArr = userList.map((val) => {
-      return (
-        <Userlist
-          avatar={val.username[0]}
-          id={val.id}
-          username={val.username}
-        />
-      );
-    });
     return newArr;
   };
 
   return (
-    <section className="w-[60vw] mt-[73px] flex mx-auto ">
+    <section className="max-w-7xl mt-20 flex mx-auto">
       {props.loading ? (
         <Spinner />
       ) : (
         <>
           <Sidebarsticky />
           {/* ----------------------------------------------------------------------------------- */}
-          <div className="w-1/2 text-center h-screen">
+          <div className=" w-[95%] md:w-3/4 lg:w-3/6 text-center h-screen mx-auto pt-2 px-1 ">
             <div className="w-full h-[300px]  ">
               <div className="w-full flex h-1/2">
-                <div className="avatar-container">
-                  <div className="relative inline-flex justify-center w-10 h-10 overflow-hidden bg-green-500 rounded-full">
-                    <span className="font-medium text-white text-center flex text-2xl">
-                      {username[0] + username[1]}
-                    </span>
-                  </div>
-                </div>
+                <img
+                  className="relative inline-flex justify-center w-16 h-16 rounded-full"
+                  src={imgProfile}
+                  alt="profile"
+                ></img>
+
                 <textarea
                   id="postarea"
-                  className="tweetpost shadow-sm relative"
-                  placeholder="What happened today ?"
+                  className="relative"
+                  placeholder="What happened today?"
                   onChange={(element) => setTextArea(element.target.value)}
                   maxLength="150"
                   value={textarea}
                 ></textarea>
               </div>
-              <Flex justifyContent="end" fontWeight="semibold">
+              <div className="flex justify-end font-normal">
                 {textarea.length}/150
-              </Flex>
+              </div>
 
-              <div className="flex justify-between items-center w-full  text-2xl  mt-3">
+              <div className="flex justify-between items-center w-full text-2xl mt-3">
                 <div className="flex">
                   <BsImage className="mx-3 text-green-500" />
                   <BsMic className="mx-3 text-green-500" />
@@ -160,20 +190,17 @@ function Landing(props) {
                 </button>
               </div>
               <hr className=" flex mx-auto h-1 w-11/12 my-4"></hr>
-              <p className=" w-full text-5xl text-left opacity-10 font-bold pl-5">
-                Whats happening
-              </p>
             </div>
 
             {/* --------------------------------------------------------------------------------------------------------- */}
-            {/* card baut tweet */}
-            <Flex flexDirection="column" alignItems="center">
+            {/* card untuk tweet */}
+            <Flex flexDirection="column" overflowY="hidden">
               {printTweet()}
             </Flex>
           </div>
           {/* ----------------------------------------------------------------------------------- */}
-          <div className="w-1/4">
-            <div className="w-full  shadow-md rounded-xl ml-5 flex flex-col items-center">
+          <div className="w-2/6 hidden lg:block">
+            <div className="w-full shadow-md rounded-xl ml-5 flex flex-col items-center">
               <span className="w-4/5 flex justify-start py-4 text-2xl font-bold">
                 Who to Follow
               </span>
@@ -187,7 +214,6 @@ function Landing(props) {
               </button>
             </div>
           </div>
-
           {/* ------------------------------------------------------------------------------------- */}
         </>
       )}

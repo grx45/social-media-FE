@@ -21,14 +21,18 @@ export const mwKeepLogin = () => {
       let token = localStorage.getItem("socio_login");
       if (token) {
         // if token bner ada
-        //ambil data dari json server
-        let response = await axios.get(`${API_URL}user?id=${token}`);
+        //kirim data token ke backend
+        let response = await axios.get(`${API_URL}user/keeplogin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         // memperbarui localstorage
-        localStorage.setItem("socio_login", response.data[0].id);
+        localStorage.setItem("socio_login", response.data.token);
         //menyimpan ulang ke reducer
         dispatch({
           type: "UPDATE_SOCIO",
-          payload: response.data[0],
+          payload: response.data,
         });
       }
     } catch (error) {

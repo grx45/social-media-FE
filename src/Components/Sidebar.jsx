@@ -7,8 +7,8 @@ import { RxPerson } from "react-icons/rx";
 function Sidebarsticky() {
   const Navigate = useNavigate();
   return (
-    <aside className="sm:w-1/4  hidden sm:block mr-5" aria-label="Sidebar">
-      <div className="px-3 py-4 overflow-y-auto rounded-xl shadow-xl">
+    <aside className=" hidden lg:block mr-5 " aria-label="Sidebar">
+      <div className="px-3 py-4 rounded-xl shadow-xl">
         <ul className="flex flex-col items-start">
           <li>
             <button
@@ -40,9 +40,13 @@ function Sidebarsticky() {
           <li>
             <span className="flex items-center p-3 text-xl font-normal text-gray-900 rounded-lg  hover:bg-gray-100 cursor-pointer ">
               <RxPerson />
-              <span className="flex-1 ml-3 whitespace-nowrap font-bold">
+              <button
+                type="button"
+                className="flex-1 ml-3 whitespace-nowrap font-bold"
+                onClick={() => Navigate("/myprofile")}
+              >
                 Profile
-              </span>
+              </button>
             </span>
           </li>
         </ul>

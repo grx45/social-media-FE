@@ -16,18 +16,17 @@ function Login() {
 
   const onLogin = async () => {
     try {
-      let response = await axios.get(
-        `${API_URL}user?email=${Email}&password=${Pass}`
-      );
-      if (response.data.length < 1) {
-        alert("Email atau Password salah");
-      } else {
-        localStorage.setItem("socio_login", response.data[0].id); //buat simpan ke local storage browser untuk keep login
-        Dispatch(UpdateSocioAction(response.data[0]));
-        Navigate("/landing", { replace: true });
-      }
+      let response = await axios.post(`${API_URL}user/login`, {
+        email: Email,
+        password: Pass,
+      });
+      console.log("response front end", response);
+      localStorage.setItem("socio_login", response.data.token); //buat simpan ke local storage browser untuk keep login
+      Dispatch(UpdateSocioAction(response.data));
+      Navigate("/landing", { replace: true });
     } catch (error) {
       console.log("error = ", error);
+      alert(error.response.data.message);
     }
   };
 
@@ -42,7 +41,7 @@ function Login() {
   };
 
   return (
-    <div className="md:w-full w-[95vw]  mt-[85px] mx-auto sm:max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-md md:p-8 md:my-56">
+    <div className="my-48 mx-auto max-w-xs md:max-w-sm bg-white border border-gray-200 rounded-lg shadow-md p-8 ">
       <form className="space-y-6" action="#">
         <h5 className="text-2xl font-bold text-gray-900 ">
           Sign in for shoping
@@ -66,7 +65,7 @@ function Login() {
           </label>
           <input
             type="text"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 "
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             required
             onChange={(element) => setEmail(element.target.value)}
           />
@@ -106,11 +105,14 @@ function Login() {
             )}
           </div>
         </div>
-        <div className="flex items-center md:justify-end">
+        <div className="flex items-center justify-end">
           <span className="text-sm font-medium text-gray-500 mr-2">
             Forgot password?
           </span>
-          <span className="text-sm text-green-500 hover:underline dark:text-blue-500">
+          <span
+            className="text-sm text-green-500 hover:underline dark:text-blue-500 cursor-pointer"
+            onClick={() => Navigate("/forgot")}
+          >
             Click here
           </span>
         </div>

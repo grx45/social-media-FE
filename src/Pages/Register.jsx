@@ -18,37 +18,28 @@ function Register() {
       if (User === "" || Email === "" || Pass === "") {
         alert("Tolong isi semua form");
       } else {
-        let responseGet = await axios.get(
-          `http://localhost:2200/user?email=${Email}`
-        );
-        if (responseGet.data.length > 0) {
-          alert("email already exists");
+        let responsePost = await axios.post(`${API_URL}user/register`, {
+          username: User,
+          password: Pass,
+          email: Email,
+          status: "unverified",
+          imgProfile: "",
+          role: "user",
+        });
+        console.log("isi response post", responsePost);
+        console.log(responsePost.data); // buat ngecek data
+        // dalam kasus ini success akan muncul ketika data sudah berhasil masuk sistem
+        // if dibawah untuk mengecek apakah id sudah ada atau tidak
+        if (responsePost.data.success) {
+          alert("data berhasil ditambah");
+          Navigate("/");
         } else {
-          let domain = /\.(com|id|co.id|org|gov|ac.id|my.id|xyz|tv)/;
-          if (Email.includes("@") && Email.match(domain)) {
-            let responsePost = axios.post(`${API_URL}user`, {
-              username: User,
-              password: Pass,
-              email: Email,
-              status: "unverified",
-              imgProfile: "",
-              role: "user",
-            });
-            console.log(responsePost.data); // buat ngecek data
-            // dalam kasus ini id akan muncul ketika data sudah berhasil masuk sistem
-            // if dibawah untuk mengecek apakah id sudah ada atau tidak
-            if (responsePost.data.id) {
-              alert("data berhasil ditambah");
-            } else {
-              alert("registration failed");
-            }
-          } else {
-            alert("Enter a valid mail");
-          }
+          alert("registration failed");
         }
       }
     } catch (error) {
-      console.log();
+      console.log(error);
+      alert(error.response.data.message);
     }
   };
 
@@ -63,7 +54,7 @@ function Register() {
   };
 
   return (
-    <div className="md:w-full w-[95vw] sm:max-w-sm mx-auto mt-[85px] p-4 bg-white border border-gray-200 rounded-lg shadow-md sm:p-6 md:p-8 md:my-56">
+    <div className="my-48 mx-auto max-w-xs md:max-w-sm bg-white border border-gray-200 rounded-lg shadow-md p-8">
       <form className="space-y-6" action="#">
         <h5 className="text-2xl font-bold text-gray-900 ">Register Account</h5>
         <div className="text-sm font-medium text-gray-500">
@@ -149,7 +140,7 @@ function Register() {
           <div className="flex items-start"></div>
         </div>
         <button
-          type="register"
+          type="button"
           className="w-full text-white bg-green-500 hover:text-green-500 hover:bg-white border border-green-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 hover:opacity-50"
           onClick={() => onRegister()}
         >

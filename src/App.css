@@ -42,8 +42,8 @@ textarea::placeholder{
   line-height: 1.75rem;
  
 }
-.tweetpost {
-  
+#postarea {
+  margin-left: 8px;
   resize: none;
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -51,11 +51,6 @@ textarea::placeholder{
   padding-left: 10px;
   border: none;
   width: 90%;
+  outline: none;
 }
-.avatar-container{
-  position: relative;
-  display: inline-flex;
-  justify-content: center;
-  width: 10%;
-  height: 2.5rem;
-}
+

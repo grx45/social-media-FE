@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   email: "",
   status: "",
   imgProfile: "",
+  imgBanner: "",
   role: "",
 };
 
